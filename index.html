@@ -1,245 +1,236 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Virtual Pet</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', sans-serif;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Virtual Pet</title>
+<style>
+  * { box-sizing: border-box; margin:0; padding:0; font-family:'Segoe UI', sans-serif;}
+  body {
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    transition:background 1s ease;
+    overflow:hidden;
+    position:relative;
+    color:#333;
+  }
+  h1 { margin-bottom:0.5rem; font-size:2.5rem;}
+  select {
+    margin-bottom:1rem;
+    padding:0.4rem;
+    font-size:1rem;
+    border-radius:8px;
+    border:1px solid #aaa;
+    z-index:2; position:relative;
+  }
+  .pet {
+    font-size:6rem;
+    margin-bottom:1rem;
+    animation:bounce 2s infinite;
+    transition:text-shadow 0.5s ease;
+    z-index:2; position:relative;
+  }
+  @keyframes bounce {
+    0%,100%{ transform: translateY(0);}
+    50%{ transform: translateY(-10px);}
+  }
+  .stats { display:flex; gap:1rem; margin-bottom:1.5rem; flex-wrap:wrap; justify-content:center; width:90%; max-width:600px; z-index:2; position:relative;}
+  .stat { background:rgba(255,255,255,0.8); padding:0.5rem; border-radius:12px; min-width:150px; flex:1;}
+  .label { margin-bottom:0.25rem; font-weight:bold;}
+  .bar { height:12px; border-radius:6px; background:#ccc; overflow:hidden;}
+  .fill { height:100%; border-radius:6px; transition: width 0.4s ease, background 0.4s ease;}
+  .buttons { display:flex; gap:1rem; flex-wrap:wrap; justify-content:center; z-index:2; position:relative;}
+  button { background:#4facfe; border:none; color:white; padding:0.6rem 1.2rem; border-radius:12px; cursor:pointer; font-size:1rem; transition:background 0.3s;}
+  button:hover{background:#00c6ff;}
 
-    body {
-      background: linear-gradient(135deg, #89f7fe, #66a6ff); /* default background */
-      color: #333;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      transition: background 0.5s ease;
-    }
-
-    h1 {
-      margin-bottom: 0.5rem;
-      font-size: 2.5rem;
-    }
-
-    select {
-      margin-bottom: 1rem;
-      padding: 0.4rem;
-      font-size: 1rem;
-      border-radius: 8px;
-      border: 1px solid #aaa;
-    }
-
-    .pet {
-      font-size: 6rem;
-      margin-bottom: 1rem;
-      animation: bounce 2s infinite;
-    }
-
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-10px); }
-    }
-
-    .stats {
-      display: flex;
-      gap: 1rem;
-      margin-bottom: 1.5rem;
-      flex-wrap: wrap;
-      justify-content: center;
-      width: 90%;
-      max-width: 600px;
-    }
-
-    .stat {
-      background: rgba(255,255,255,0.8);
-      padding: 0.5rem;
-      border-radius: 12px;
-      min-width: 150px;
-      flex: 1;
-    }
-
-    .label {
-      margin-bottom: 0.25rem;
-      font-weight: bold;
-    }
-
-    .bar {
-      height: 12px;
-      border-radius: 6px;
-      background: #ccc;
-      overflow: hidden;
-    }
-
-    .fill {
-      height: 100%;
-      border-radius: 6px;
-      transition: width 0.4s ease, background 0.4s ease;
-    }
-
-    .buttons {
-      display: flex;
-      gap: 1rem;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    button {
-      background: #4facfe;
-      border: none;
-      color: white;
-      padding: 0.6rem 1.2rem;
-      border-radius: 12px;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: background 0.3s;
-    }
-
-    button:hover {
-      background: #00c6ff;
-    }
-  </style>
+  #sparkles {
+    position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; overflow:hidden; z-index:1;
+  }
+  .sparkle {
+    position:absolute;
+    background:white;
+    border-radius:50%;
+    opacity:0;
+    animation:sparkleTwinkle linear infinite;
+  }
+  @keyframes sparkleTwinkle {
+    0% {transform: scale(0.5); opacity:0;}
+    25% {opacity:0.6; transform: scale(1);}
+    50% {opacity:0; transform: scale(0.5);}
+    75% {opacity:0.6; transform: scale(1);}
+    100% {opacity:0; transform: scale(0.5);}
+  }
+  /* Phoenix gradient animation */
+  @keyframes phoenixGradient{
+    0%{background-position:0% 50%;}
+    50%{background-position:100% 50%;}
+    100%{background-position:0% 50%;}
+  }
+</style>
 </head>
 <body>
-  <h1>Take Care of Your Pet</h1>
+<h1>Take Care of Your Pet</h1>
 
-  <label for="petSelect">Choose your pet: </label>
-  <select id="petSelect" onchange="changePet()">
-    <option value="dog">Dog</option>
-    <option value="cat">Cat</option>
-    <option value="bird">Bird</option>
-    <option value="phoenix">Phoenix</option>
-    <option value="dragon">Dragon</option>
-  </select>
+<label for="petSelect">Choose your pet: </label>
+<select id="petSelect" onchange="changePet()">
+  <option value="dog">Dog</option>
+  <option value="cat">Cat</option>
+  <option value="bird">Bird</option>
+  <option value="phoenix">Phoenix</option>
+  <option value="dragon">Dragon</option>
+</select>
 
-  <div class="pet" id="pet">🐶</div>
+<div class="pet" id="pet">🐶</div>
 
-  <div class="stats">
-    <div class="stat">
-      <div class="label">Hunger</div>
-      <div class="bar"><div class="fill" id="hungerFill"></div></div>
-    </div>
-    <div class="stat">
-      <div class="label">Happiness</div>
-      <div class="bar"><div class="fill" id="happinessFill"></div></div>
-    </div>
-    <div class="stat">
-      <div class="label">Energy</div>
-      <div class="bar"><div class="fill" id="energyFill"></div></div>
-    </div>
-  </div>
+<div class="stats">
+  <div class="stat"><div class="label">Hunger</div><div class="bar"><div class="fill" id="hungerFill"></div></div></div>
+  <div class="stat"><div class="label">Happiness</div><div class="bar"><div class="fill" id="happinessFill"></div></div></div>
+  <div class="stat"><div class="label">Energy</div><div class="bar"><div class="fill" id="energyFill"></div></div></div>
+</div>
 
-  <div class="buttons">
-    <button onclick="feedPet()">Feed 🍖</button>
-    <button onclick="playPet()">Play 🎾</button>
-    <button onclick="sleepPet()">Sleep 😴</button>
-  </div>
+<div class="buttons">
+  <button onclick="feedPet()">Feed 🍖</button>
+  <button onclick="playPet()">Play 🎾</button>
+  <button onclick="sleepPet()">Sleep 😴</button>
+</div>
 
-  <script>
-    // base emojis for each pet when happy/sad/tired
-    const baseEmojis = {
-      dog: {happy:'🐶', sad:'🐕‍🦺', tired:'🐕💤'},
-      cat: {happy:'🐱', sad:'😿', tired:'🐈💤'},
-      bird: {happy:'🐦', sad:'🐦💧', tired:'🐦💤'},
-      // blue phoenix
-      phoenix: {happy:'🪽💙', sad:'🪽💧', tired:'🪽💤'},
-      dragon: {happy:'🐉', sad:'🐲💧', tired:'🐲💤'}
-    };
+<div id="sparkles"></div>
 
-    let hunger = parseInt(localStorage.getItem('petHunger')) || 50;
-    let happiness = parseInt(localStorage.getItem('petHappiness')) || 50;
-    let energy = parseInt(localStorage.getItem('petEnergy')) || 50;
-    let currentPet = localStorage.getItem('currentPet') || 'dog';
+<script>
+  const baseEmojis = {
+    dog:{happy:'🐶', sad:'🐕‍🦺', tired:'🐕💤'},
+    cat:{happy:'🐱', sad:'😿', tired:'🐈💤'},
+    bird:{happy:'🐦', sad:'🐦💧', tired:'🐦💤'},
+    phoenix:{happy:'🪽💙', sad:'🪽💧', tired:'🪽💤'},
+    dragon:{happy:'🐉', sad:'🐲💧', tired:'🐲💤'}
+  };
 
-    const petEl = document.getElementById('pet');
-    const petSelect = document.getElementById('petSelect');
-    const hungerFill = document.getElementById('hungerFill');
-    const happinessFill = document.getElementById('happinessFill');
-    const energyFill = document.getElementById('energyFill');
+  let hunger=parseInt(localStorage.getItem('petHunger'))||50;
+  let happiness=parseInt(localStorage.getItem('petHappiness'))||50;
+  let energy=parseInt(localStorage.getItem('petEnergy'))||50;
+  let currentPet=localStorage.getItem('currentPet')||'dog';
 
-    function getColor(value, reverse=false) {
-      let v = reverse ? (100 - value) : value;
-      if (v > 66) return '#4caf50';
-      if (v > 33) return '#ffeb3b';
-      return '#f44336';
+  const petEl=document.getElementById('pet');
+  const petSelect=document.getElementById('petSelect');
+  const hungerFill=document.getElementById('hungerFill');
+  const happinessFill=document.getElementById('happinessFill');
+  const energyFill=document.getElementById('energyFill');
+  const sparklesContainer=document.getElementById('sparkles');
+
+  function getColor(value,reverse=false){
+    let v=reverse?(100-value):value;
+    if(v>66)return'#4caf50';
+    if(v>33)return'#ffeb3b';
+    return'#f44336';
+  }
+
+  function getPetEmoji(){
+    const emojis=baseEmojis[currentPet];
+    if(energy<30)return emojis.tired;
+    if(happiness<30||hunger>70)return emojis.sad;
+    return emojis.happy;
+  }
+
+  function updateStats(){
+    localStorage.setItem('petHunger',hunger);
+    localStorage.setItem('petHappiness',happiness);
+    localStorage.setItem('petEnergy',energy);
+
+    hungerFill.style.width=hunger+'%';
+    happinessFill.style.width=happiness+'%';
+    energyFill.style.width=energy+'%';
+
+    hungerFill.style.background=getColor(hunger,true);
+    happinessFill.style.background=getColor(happiness);
+    energyFill.style.background=getColor(energy);
+
+    petEl.textContent=getPetEmoji();
+    applyPetEffects();
+  }
+
+  function changeBackground(){
+    sparklesContainer.innerHTML=''; sparklesContainer.style.display='none';
+    if(currentPet==='dog'){ document.body.style.background='linear-gradient(135deg, #a8e6cf, #dcedc1)'; document.body.style.animation=''; }
+    else if(currentPet==='cat'){ document.body.style.background='linear-gradient(135deg, #ffe0ac, #ffcccb)'; document.body.style.animation=''; }
+    else if(currentPet==='bird'){ document.body.style.background='linear-gradient(135deg, #87cefa, #b0e0e6)'; document.body.style.animation=''; }
+    else if(currentPet==='phoenix'){
+      document.body.style.background='linear-gradient(-45deg,#99ccff,#003366,#66b2ff,#003366)';
+      document.body.style.backgroundSize='400% 400%';
+      document.body.style.animation='phoenixGradient 10s ease infinite';
+      sparklesContainer.style.display='block';
+      createTwinklingSparks(60);
     }
+    else if(currentPet==='dragon'){ document.body.style.background='linear-gradient(135deg,#330000,#660000,#990000)'; document.body.style.animation=''; }
+  }
 
-    function getPetEmoji() {
-      const emojis = baseEmojis[currentPet];
-      if (energy < 30) return emojis.tired;
-      if (happiness < 30 || hunger > 70) return emojis.sad;
-      return emojis.happy;
-    }
+  function applyPetEffects(){
+    if(currentPet==='phoenix'){ petEl.style.textShadow='0 0 20px #00ccff,0 0 40px #3399ff'; }
+    else if(currentPet==='dragon'){ petEl.style.textShadow='0 0 10px #ff6600'; }
+    else if(currentPet==='bird'){ petEl.style.textShadow='0 0 5px #ffffff'; }
+    else{ petEl.style.textShadow='0 0 5px #888'; }
+  }
 
-    function changeBackground() {
-      if (currentPet === 'phoenix') {
-        document.body.style.background = 'linear-gradient(135deg, #cce6ff, #003366)';
-      } else {
-        document.body.style.background = 'linear-gradient(135deg, #89f7fe, #66a6ff)';
-      }
-    }
-
-    function changePet() {
-      currentPet = petSelect.value;
-      localStorage.setItem('currentPet', currentPet);
-      petEl.textContent = getPetEmoji();
-      changeBackground();
-    }
-
-    function updateStats() {
-      localStorage.setItem('petHunger', hunger);
-      localStorage.setItem('petHappiness', happiness);
-      localStorage.setItem('petEnergy', energy);
-
-      hungerFill.style.width = hunger + '%';
-      happinessFill.style.width = happiness + '%';
-      energyFill.style.width = energy + '%';
-
-      hungerFill.style.background = getColor(hunger, true);
-      happinessFill.style.background = getColor(happiness);
-      energyFill.style.background = getColor(energy);
-
-      petEl.textContent = getPetEmoji();
-    }
-
-    function feedPet() {
-      hunger = Math.max(0, hunger - 10);
-      happiness = Math.min(100, happiness + 5);
-      updateStats();
-    }
-
-    function playPet() {
-      happiness = Math.min(100, happiness + 10);
-      energy = Math.max(0, energy - 5);
-      hunger = Math.min(100, hunger + 5);
-      updateStats();
-    }
-
-    function sleepPet() {
-      energy = Math.min(100, energy + 15);
-      hunger = Math.min(100, hunger + 5);
-      updateStats();
-    }
-
-    setInterval(() => {
-      hunger = Math.min(100, hunger + 1);
-      happiness = Math.max(0, happiness - 1);
-      energy = Math.max(0, energy - 1);
-      updateStats();
-    }, 5000);
-
-    // on load
-    petSelect.value = currentPet;
+  function changePet(){
+    currentPet=petSelect.value;
+    localStorage.setItem('currentPet',currentPet);
+    petEl.textContent=getPetEmoji();
     changeBackground();
-    petEl.textContent = getPetEmoji();
+    applyPetEffects();
+  }
+
+  function feedPet(){ hunger=Math.max(0,hunger-10); happiness=Math.min(100,happiness+5); updateStats();}
+  function playPet(){ happiness=Math.min(100,happiness+10); energy=Math.max(0,energy-5); hunger=Math.min(100,hunger+5); updateStats();}
+  function sleepPet(){ energy=Math.min(100,energy+15); hunger=Math.min(100,hunger+5); updateStats(); }
+
+  setInterval(()=>{
+    hunger=Math.min(100,hunger+1);
+    happiness=Math.max(0,happiness-1);
+    energy=Math.max(0,energy-1);
     updateStats();
-  </script>
+  },5000);
+
+  function createTwinklingSparks(count){
+    for(let i=0;i<count;i++){
+      const sparkle=document.createElement('div');
+      sparkle.className='sparkle';
+      sparkle.style.left=Math.random()*100+'%';
+      sparkle.style.top=Math.random()*100+'%';
+      sparkle.style.width=(Math.random()*3+2)+'px';
+      sparkle.style.height=sparkle.style.width;
+      sparkle.style.animationDuration=(Math.random()*3+2)+'s';
+      sparkle.style.animationDelay=(Math.random()*2)+'s';
+      // random curve motion
+      sparkle.style.transform=`translate(${Math.random()*20-10}px,0)`;
+      sparkle.motionOffset=Math.random()*2*Math.PI;
+      sparkle.speed=(Math.random()*0.5+0.2);
+      sparkle.amplitude=Math.random()*15+5;
+      sparkle.angle=Math.random()*2*Math.PI;
+      sparklesContainer.appendChild(sparkle);
+    }
+    animateSparks();
+  }
+
+  function animateSparks(){
+    const sparks=document.querySelectorAll('.sparkle');
+    sparks.forEach(s=>{
+      s.angle+=s.speed*0.02;
+      const x=Math.sin(s.angle+s.motionOffset)*s.amplitude;
+      const y=parseFloat(s.style.top)-0.3;
+      s.style.transform=`translate(${x}px,${y}px)`;
+      if(y<-5) s.style.top='100%';
+      else s.style.top=y+'%';
+    });
+    requestAnimationFrame(animateSparks);
+  }
+
+  petSelect.value=currentPet;
+  changeBackground();
+  petEl.textContent=getPetEmoji();
+  updateStats();
+</script>
 </body>
 </html>
